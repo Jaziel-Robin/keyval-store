@@ -29,6 +29,16 @@ module.exports = express()
             .then((key) => res.status(201).json({ key }))
             .catch(next);
     })
+    .get('/storage/all', (req, res, next) => {
+        // isExpired can only be 0 or 1, 0 --> Not expired, 1 --> Expired
+
+        const { lastId, pageSize, isExpired } = req.query;
+        return getAll(lastId, pageSize, isExpired).then((result) => res.json(result)).catch(next);
+    })
+    .put('/storage', (req, res, next) => {
+        const { key, expiryDate } = req.query;
+        return update(key, expiryDate).then(() => res.sendStatus(200));
+    })
     .use((req, res, next) => next(createHttpError(404, `Unknown resource ${req.method} ${req.originalUrl}`)))
     .use((error, req, res, next) => {
         console.error(error);
